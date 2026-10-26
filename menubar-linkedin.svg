@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="78" height="20" viewBox="0 0 78 20">
-<rect x="-10" y="0.5" width="98" height="19" rx="5" fill="#1c1c1e" stroke="#30363d"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="20" viewBox="0 0 64 20">
+<rect x="-10" y="0.5" width="84" height="19" rx="5" fill="#1c1c1e" stroke="#30363d"/>
 <g font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12">
-<text x="39.0" y="14" text-anchor="middle" fill="#d0d7de">linkedin ↗</text>
+<text x="32.0" y="14" text-anchor="middle" fill="#d0d7de">linkedin</text>
 </g>
 </svg>

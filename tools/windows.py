@@ -1,4 +1,4 @@
-"""Build terminal-window SVGs for the profile README: tech stack, connect cards.
+"""Build terminal-window SVGs for the profile README: intro, tech stack, menu bar.
 
 Usage: python3 windows.py <icons_dir> <extra_icons_dir> <out_dir>
 Icons are embedded as data URIs, because an SVG shown through <img> cannot
@@ -23,8 +23,6 @@ FILLS = {
     "tableau": "#e97627",
     "excel": "#21a366",
     "confluence": "#2684ff",
-    "linkedin": "#0a66c2",
-    "medium": "#f0f6fc",
 }
 
 # Icons whose own colors vanish on the dark window: (old color, new color).
@@ -95,16 +93,6 @@ def tech_stack(dirs, width=420, icon=28):
     return window(width, height, "tech-stack.txt", "\n".join(parts))
 
 
-def connect_card(name, label, dirs):
-    width = (WIDTH - 8) // 2  # two cards side by side, with a small gap
-    height = BAR + 2 * 18 + ICON
-    top = BAR + 18
-    body = (f'<image x="{PAD}" y="{top}" width="{ICON}" height="{ICON}" href="{icon_uri(name, dirs)}"/>\n'
-            f'<text x="{PAD + ICON + 12}" y="{top + ICON / 2 + 4}" font-family="{MONO}" font-size="13" '
-            f'fill="#d0d7de">{escape(label)}</text>')
-    return window(width, height, name, body)
-
-
 FULL_WIDTH = 804  # both README columns: 400 + gap + 400
 
 INTRO = [  # (kind, text); kind picks the markdown-style color
@@ -152,10 +140,12 @@ def intro():
 # lays them side by side with no space between, so they read as one bar.
 MENUBAR = [
     ("menubar-start.svg", None, 92),
-    ("menubar-linkedin.svg", "linkedin ↗", 78),
-    ("menubar-medium.svg", "medium ↗", 76),
-    ("menubar-website.svg", "website ↗", 78),
-    ("menubar-end.svg", None, 396),
+    ("menubar-linkedin.svg", "linkedin", 64),
+    ("menubar-medium.svg", "medium", 62),
+    ("menubar-goodreads.svg", "goodreads", 74),
+    ("menubar-twitter.svg", "twitter", 60),
+    ("menubar-website.svg", "website", 64),
+    ("menubar-end.svg", None, 304),
 ]
 MENU_SANS = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif"
 
@@ -208,8 +198,6 @@ if __name__ == "__main__":
     outputs = {
         "intro.svg": intro(),
         "tech-stack.svg": tech_stack(dirs),
-        "connect-linkedin.svg": connect_card("linkedin", "in/mazines", dirs),
-        "connect-medium.svg": connect_card("medium", "@mazines", dirs),
     }
     outputs.update(menubar(dirs))
     for fname, svg in outputs.items():

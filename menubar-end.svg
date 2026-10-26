@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="396" height="20" viewBox="0 0 396 20">
-<rect x="-10" y="0.5" width="405.5" height="19" rx="5" fill="#1c1c1e" stroke="#30363d"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="304" height="20" viewBox="0 0 304 20">
+<rect x="-10" y="0.5" width="313.5" height="19" rx="5" fill="#1c1c1e" stroke="#30363d"/>
 <g font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="12">
-<rect x="362" y="5.5" width="19" height="9" rx="2.5" fill="none" stroke="#d0d7de"/><rect x="364" y="7.5" width="12" height="5" rx="1" fill="#d0d7de"/><rect x="382" y="8.5" width="1.6" height="3" rx="0.8" fill="#d0d7de"/>
-<g fill="none" stroke="#d0d7de" stroke-width="1.5" stroke-linecap="round"><path d="M337 9 A9.5 9.5 0 0 1 351 9"/><path d="M339.8 11.6 A6 6 0 0 1 348.2 11.6"/></g><circle cx="344" cy="14" r="1.4" fill="#d0d7de"/>
+<rect x="270" y="5.5" width="19" height="9" rx="2.5" fill="none" stroke="#d0d7de"/><rect x="272" y="7.5" width="12" height="5" rx="1" fill="#d0d7de"/><rect x="290" y="8.5" width="1.6" height="3" rx="0.8" fill="#d0d7de"/>
+<g fill="none" stroke="#d0d7de" stroke-width="1.5" stroke-linecap="round"><path d="M245 9 A9.5 9.5 0 0 1 259 9"/><path d="M247.8 11.6 A6 6 0 0 1 256.2 11.6"/></g><circle cx="252" cy="14" r="1.4" fill="#d0d7de"/>
 </g>
 </svg>
