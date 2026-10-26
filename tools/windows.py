@@ -147,52 +147,71 @@ def intro():
     return window(FULL_WIDTH, height, "intro.md", body)
 
 
-def menubar(dirs, width=720):
-    # macOS-style menu bar. Menus name the README windows below it. The README
-    # puts the live profile-views badge (20px tall) at its right end, so the
-    # bar is 20px tall too and leaves room for it.
+# Menu bar pieces, left to right: (file name, link label or None, width).
+# Each piece is its own image, so each link item is its own <a>. The README
+# lays them side by side with no space between, so they read as one bar.
+MENUBAR = [
+    ("menubar-start.svg", None, 92),
+    ("menubar-linkedin.svg", "linkedin ↗", 78),
+    ("menubar-medium.svg", "medium ↗", 76),
+    ("menubar-website.svg", "website ↗", 78),
+    ("menubar-end.svg", None, 396),
+]
+MENU_SANS = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif"
+
+
+def menubar_piece(width, body, left, right):
+    # macOS-style bar piece, 20px tall to match the profile-views badge.
+    # The background rect overhangs any side that joins another piece, so
+    # only the bar's two outer ends show rounded corners and side borders.
     height = 20
-    mid = height / 2
-    sans = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif"
-    apple = open(os.path.join(dirs[0], "apple.svg")).read().replace("<svg ", '<svg fill="#f0f6fc" ', 1)
-    apple_uri = "data:image/svg+xml;base64," + base64.b64encode(apple.encode()).decode()
-    menus = ["intro.md", "portrait.txt", "linkedin", "medium", "tech-stack.txt"]
-    base = mid + 4  # text baseline
-    parts = [f'<image x="12" y="{mid - 6}" width="12" height="12" href="{apple_uri}"/>',
-             f'<text x="36" y="{base}" font-weight="700" fill="#f0f6fc">mazines</text>']
-    # One text run, so the browser measures each word; runs of non-breaking
-    # spaces keep the gaps equal.
-    gap = "\u00a0" * 5
-    parts.append(f'<text x="100" y="{base}" fill="#d0d7de">{escape(gap.join(menus))}</text>')
-    # Right side: Wi-Fi, battery, like the menu bar status items.
-    bx = width - 34
-    parts.append(f'<rect x="{bx}" y="{mid - 4.5}" width="19" height="9" rx="2.5" fill="none" stroke="#d0d7de"/>'
-                 f'<rect x="{bx + 2}" y="{mid - 2.5}" width="12" height="5" rx="1" fill="#d0d7de"/>'
-                 f'<rect x="{bx + 20}" y="{mid - 1.5}" width="1.6" height="3" rx="0.8" fill="#d0d7de"/>')
-    wx, wy = bx - 18, mid + 5
-    parts.append(f'<g fill="none" stroke="#d0d7de" stroke-width="1.5" stroke-linecap="round">'
-                 f'<path d="M{wx - 7} {wy - 6} A9.5 9.5 0 0 1 {wx + 7} {wy - 6}"/>'
-                 f'<path d="M{wx - 4.2} {wy - 3.4} A6 6 0 0 1 {wx + 4.2} {wy - 3.4}"/></g>'
-                 f'<circle cx="{wx}" cy="{wy - 1}" r="1.4" fill="#d0d7de"/>')
+    x0 = 0.5 if left else -10
+    x1 = width - 0.5 if right else width + 10
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
-<rect x="0.5" y="0.5" width="{width - 1}" height="{height - 1}" rx="5" fill="#1c1c1e" stroke="#30363d"/>
-<g font-family="{sans}" font-size="12">
-{chr(10).join(parts)}
+<rect x="{x0}" y="0.5" width="{x1 - x0}" height="{height - 1}" rx="5" fill="#1c1c1e" stroke="#30363d"/>
+<g font-family="{MENU_SANS}" font-size="12">
+{body}
 </g>
 </svg>
 '''
+
+
+def menubar(dirs):
+    apple = open(os.path.join(dirs[0], "apple.svg")).read().replace("<svg ", '<svg fill="#f0f6fc" ', 1)
+    apple_uri = "data:image/svg+xml;base64," + base64.b64encode(apple.encode()).decode()
+    pieces = {}
+    last = len(MENUBAR) - 1
+    for i, (fname, label, width) in enumerate(MENUBAR):
+        if i == 0:
+            body = (f'<image x="12" y="4" width="12" height="12" href="{apple_uri}"/>\n'
+                    f'<text x="34" y="14" font-weight="700" fill="#f0f6fc">mazines</text>')
+        elif i == last:
+            # Wi-Fi, battery at the right end, like menu bar status items.
+            bx = width - 34
+            wx, wy = bx - 18, 15
+            body = (f'<rect x="{bx}" y="5.5" width="19" height="9" rx="2.5" fill="none" stroke="#d0d7de"/>'
+                    f'<rect x="{bx + 2}" y="7.5" width="12" height="5" rx="1" fill="#d0d7de"/>'
+                    f'<rect x="{bx + 20}" y="8.5" width="1.6" height="3" rx="0.8" fill="#d0d7de"/>\n'
+                    f'<g fill="none" stroke="#d0d7de" stroke-width="1.5" stroke-linecap="round">'
+                    f'<path d="M{wx - 7} {wy - 6} A9.5 9.5 0 0 1 {wx + 7} {wy - 6}"/>'
+                    f'<path d="M{wx - 4.2} {wy - 3.4} A6 6 0 0 1 {wx + 4.2} {wy - 3.4}"/></g>'
+                    f'<circle cx="{wx}" cy="{wy - 1}" r="1.4" fill="#d0d7de"/>')
+        else:
+            body = f'<text x="{width / 2}" y="14" text-anchor="middle" fill="#d0d7de">{escape(label)}</text>'
+        pieces[fname] = menubar_piece(width, body, left=(i == 0), right=(i == last))
+    return pieces
 
 
 if __name__ == "__main__":
     icons_dir, extra_dir, out = sys.argv[1], sys.argv[2], sys.argv[3]
     dirs = [icons_dir, extra_dir]
     outputs = {
-        "menubar.svg": menubar(dirs),
         "intro.svg": intro(),
         "tech-stack.svg": tech_stack(dirs),
         "connect-linkedin.svg": connect_card("linkedin", "in/mazines", dirs),
         "connect-medium.svg": connect_card("medium", "@mazines", dirs),
     }
+    outputs.update(menubar(dirs))
     for fname, svg in outputs.items():
         with open(os.path.join(out, fname), "w") as f:
             f.write(svg)
