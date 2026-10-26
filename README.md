@@ -2,6 +2,10 @@
   <img src="https://komarev.com/ghpvc/?username=mazzaleen&label=Profile%20views&color=0e75b6&style=flat" alt="mazzaleen" />
 </p>
 
+<p align="center">
+  <img src="./portrait.svg" alt="ASCII portrait of Mazine" width="548" />
+</p>
+
 <h1 align="center">
   Hi 👋, I'm <a href="https://linkedin.com/in/mazines" target="_blank">Mazine Suliman</a>
 </h1>
