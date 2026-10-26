@@ -1,13 +1,16 @@
-<p align="right">
-  <a href="#"><img src="./menubar-start.svg" alt="" width="10.99%" /></a><a href="https://linkedin.com/in/mazines"><img src="./menubar-linkedin.svg" alt="LinkedIn" width="7.64%" /></a><a href="https://mazines.medium.com"><img src="./menubar-medium.svg" alt="Medium" width="7.41%" /></a><a href="https://www.goodreads.com/mazine"><img src="./menubar-goodreads.svg" alt="Goodreads" width="8.84%" /></a><a href="https://x.com/amazzaleen"><img src="./menubar-twitter.svg" alt="Twitter" width="7.17%" /></a><a href="https://mazines.github.io"><img src="./menubar-website.svg" alt="Website" width="7.64%" /></a><a href="#"><img src="./menubar-end.svg" alt="" width="36.31%" /></a>
-  <a href="#"><img src="https://komarev.com/ghpvc/?username=mazzaleen&label=Profile%20views&color=0a84ff&style=flat" alt="Profile views" /></a>
-</p>
-
-<p align="center">
-  <a href="#"><img src="./intro.svg" alt="Hi, I'm Mazine Suliman. Software Engineer focused on data systems, privacy-first data platforms, and product discovery. SWE to PM with experience turning ambiguous user signals into shipped features and measurable impact. Working on LLM-driven clustering, summarization, and evaluation, and product discovery using qualitative and quantitative customer signals." width="100%" /></a>
+<p>
+  <a href="#"><img src="./menubar-start.svg?v=2" alt="" width="12.78%" /></a><a href="https://linkedin.com/in/mazines"><img src="./menubar-linkedin.svg?v=2" alt="LinkedIn" width="8.89%" /></a><a href="https://mazines.medium.com"><img src="./menubar-medium.svg?v=2" alt="Medium" width="8.61%" /></a><a href="https://www.goodreads.com/mazine"><img src="./menubar-goodreads.svg?v=2" alt="Goodreads" width="10.28%" /></a><a href="https://x.com/amazzaleen"><img src="./menubar-twitter.svg?v=2" alt="Twitter" width="8.33%" /></a><a href="https://mazines.github.io"><img src="./menubar-website.svg?v=2" alt="Website" width="8.89%" /></a><a href="#"><img src="https://raw.githubusercontent.com/mazines/mazines/stats/menubar-end.svg" alt="Profile views, date" width="42.22%" /></a>
 </p>
 
 <p>
-  <a href="#"><img align="right" src="./tech-stack.svg" alt="Tech stack: Python, Ruby, Java, GraphQL, PostgreSQL, MySQL, MongoDB, Redis, Cassandra, DynamoDB, Tableau, Splunk, Grafana, TensorFlow, PyTorch, MATLAB, Excel, Swift, Rails, Angular, React, JavaScript, HTML5, CSS3, Bootstrap, Sass, AWS, Docker, Kubernetes, Jenkins, Heroku, Kafka, Miro, Figma, Confluence, Jira, Trello, Firebase, Google Analytics, Git" width="400" /></a>
-  <a href="#"><img src="./portrait.svg" alt="ASCII portrait of Mazine" width="400" /></a>
+  <a href="#"><img align="right" src="./intro.svg?v=2" alt="Hi, I'm Mazine Suliman. Software Engineer focused on data systems, privacy-first data platforms, and product discovery. SWE to PM with experience turning ambiguous user signals into shipped features and measurable impact. Working on LLM-driven clustering, summarization, and evaluation, and product discovery using qualitative and quantitative customer signals." width="49%" /></a>
+  <a href="#"><img align="left" src="./portrait.svg?v=2" alt="ASCII portrait of Mazine" width="49%" /></a>
 </p>
+
+<p>
+  <a href="#"><img src="./tech-stack.svg?v=2" alt="Tech stack: Claude, Codex, Python, Ruby, Java, GraphQL, Django, Rails, Angular, React, JavaScript, TypeScript, HTML5, CSS3, Bootstrap, Sass, Next.js, TanStack, styled-components, Postgres, MySQL, MongoDB, Redis, Cassandra, DynamoDB, Tableau, Splunk, Grafana, Sentry, pytest, Playwright, Vitest, AWS, Docker, Kubernetes, Jenkins, Heroku, Kafka, Figma, Jira, Trello, Miro, Firebase, GA, Radar, Git, Bitbucket, TensorFlow, PyTorch, MATLAB, Excel, Swift. Languages: Arabic, English, Spanish, French." width="100%" /></a>
+</p>
+
+<!-- Profile-view counter: counts each README view. The menu bar shows the
+     count, read once a day by .github/workflows/menubar.yml. -->
+<a href="#"><img src="https://komarev.com/ghpvc/?username=mazzaleen" alt="" width="1" height="1" /></a>

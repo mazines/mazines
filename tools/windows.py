@@ -1,62 +1,76 @@
 """Build terminal-window SVGs for the profile README: intro, tech stack, menu bar.
 
-Usage: python3 windows.py <icons_dir> <extra_icons_dir> <out_dir>
+Usage: python3 windows.py <site_dir> <out_dir>
+<site_dir> is a clone of mazines.github.io. The tech stack is read from its
+skills page, so the README and the site list the same skills.
 Icons are embedded as data URIs, because an SVG shown through <img> cannot
-load outside images.
+load outside images. The menu bar's status piece (views, date) is built by
+menubar_status.py, which a daily GitHub Action runs.
 """
 import base64
+import itertools
 import os
+import re
 import sys
-from html import escape
+import textwrap
+from html import escape, unescape
 
 MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
-WIDTH = 548       # same width as portrait.svg
 PAD = 22
 BAR = 34          # title bar height
-ICON = 32
 ICON_GAP = 9
 COL_GAP = 20
+LIGHT = "#d0d7de"
+
+# portrait.svg is 548x484 (see build.py). The intro window beside it uses the
+# same aspect ratio, so both are the same height at the same README width.
+PORTRAIT_ASPECT = 484 / 548
 
 # Single-color icons with no fill of their own draw black; give them brand colors.
 FILLS = {
     "dynamodb": "#4053d6",
     "tableau": "#e97627",
     "excel": "#21a366",
-    "confluence": "#2684ff",
 }
 
 # Icons whose own colors vanish on the dark window: (old color, new color).
 RECOLOR = {
     "heroku": ('fill="currentColor"', 'fill="#9e7cff"'),
-    "apachekafka": ("#231f20", "#f0f6fc"),
     "mysql": ("#00618A", "#4f9fd4"),
     "aws": ("#252f3e", "#f0f6fc"),
 }
 
-STACK = [  # (column, section, icons)
-    (0, "back-end", ["python", "ruby", "java", "graphql"]),
-    (0, "databases", ["postgresql", "mysql", "mongodb", "redis", "apachecassandra", "dynamodb"]),
-    (0, "analytics & observability", ["tableau", "splunk", "grafana"]),
-    (0, "data science & ml", ["tensorflow", "pytorch", "matlab", "excel"]),
-    (0, "mobile", ["swift"]),
-    (1, "front-end", ["rubyonrails", "angular", "react", "javascript", "html5", "css3", "bootstrap", "sass"]),
-    (1, "devops", ["aws", "docker", "kubernetes", "jenkins", "heroku", "apachekafka"]),
-    (1, "product management", ["miro", "figma", "confluence", "jira", "trello", "firebase", "googleanalytics"]),
-    (1, "version control", ["git"]),
-]
+
+def data_uri(path):
+    name, ext = os.path.splitext(os.path.basename(path))
+    if ext == ".png":
+        return "data:image/png;base64," + base64.b64encode(open(path, "rb").read()).decode()
+    svg = open(path).read()
+    if name in RECOLOR:
+        svg = svg.replace(*RECOLOR[name])
+    elif name in FILLS:
+        svg = svg.replace("<svg ", f'<svg fill="{FILLS[name]}" ', 1)
+    elif "currentColor" in svg:
+        # The site colors these with CSS; match its light text color.
+        svg = svg.replace("currentColor", LIGHT)
+    elif "fill" not in svg:
+        svg = svg.replace("<svg ", f'<svg fill="{LIGHT}" ', 1)
+    return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
 
 
-def icon_uri(name, dirs):
-    for d in dirs:
-        path = os.path.join(d, name + ".svg")
-        if os.path.exists(path):
-            svg = open(path).read()
-            if name in RECOLOR:
-                svg = svg.replace(*RECOLOR[name])
-            if name in FILLS:
-                svg = svg.replace("<svg ", f'<svg fill="{FILLS[name]}" ', 1)
-            return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
-    raise FileNotFoundError(name)
+def read_skills(site_dir):
+    """Return [(section, [(icon_path, dark_logo)])] from the site's skills page."""
+    html = open(os.path.join(site_dir, "skills", "index.html")).read()
+    html = html[:html.index('<nav class="main-nav">')]
+    groups = []
+    for chunk in html.split('<div class="skill-group">')[1:]:
+        title = unescape(re.search(r"<h2>(.*?)</h2>", chunk).group(1)).lower()
+        if 'class="lang-note"' in chunk:
+            title += " (by proficiency)"
+        icons = [(os.path.join(site_dir, src.lstrip("/")), "dark-logo" in cls)
+                 for cls, src in re.findall(r'<img class="([^"]*)" src="(/assets/icons/[^"]+)"', chunk)]
+        groups.append((title, icons))
+    return groups
 
 
 def window(width, height, title, body):
@@ -72,28 +86,50 @@ def window(width, height, title, body):
 '''
 
 
-def tech_stack(dirs, width=420, icon=28):
-    # 420 wide: sits beside the portrait column in the README, about as tall.
-    col_w = (width - 2 * PAD - COL_GAP) / 2
+def tech_stack(site_dir, width=804, cols=3, icon=28):
+    # Full README width, under the portrait and intro row.
+    groups = read_skills(site_dir)
+    col_w = (width - 2 * PAD - (cols - 1) * COL_GAP) / cols
     per_row = int((col_w + ICON_GAP) // (icon + ICON_GAP))
-    y = [BAR + PAD, BAR + PAD]
+    step = icon + ICON_GAP
+
+    def group_h(icons):
+        return 20 + -(-len(icons) // per_row) * step + 14
+
+    # Keep the site's order, filled top to bottom like CSS columns: try every
+    # way to cut the list into `cols` runs, keep the one with the shortest
+    # tallest column.
+    heights = [group_h(icons) for _, icons in groups]
+    best = None
+    for cuts in itertools.combinations(range(1, len(groups)), cols - 1):
+        bounds = (0, *cuts, len(groups))
+        tallest = max(sum(heights[a:b]) for a, b in zip(bounds, bounds[1:]))
+        if best is None or tallest < best[0]:
+            best = (tallest, bounds)
+    tallest, bounds = best
+
     parts = []
-    for col, section, icons in STACK:
+    for col, (a, b) in enumerate(zip(bounds, bounds[1:])):
         x0 = PAD + col * (col_w + COL_GAP)
-        parts.append(f'<text x="{x0}" y="{y[col] + 10}" font-family="{MONO}" font-size="12" '
-                     f'fill="#8b949e">~/{escape(section)}</text>')
-        y[col] += 20
-        for i, name in enumerate(icons):
-            r, c = divmod(i, per_row)
-            parts.append(f'<image x="{x0 + c * (icon + ICON_GAP):.1f}" y="{y[col] + r * (icon + ICON_GAP)}" '
-                         f'width="{icon}" height="{icon}" href="{icon_uri(name, dirs)}"/>')
-        rows = (len(icons) + per_row - 1) // per_row
-        y[col] += rows * (icon + ICON_GAP) + 14
-    height = int(max(y) - 14 + PAD)
+        y = BAR + PAD
+        for title, icons in groups[a:b]:
+            parts.append(f'<text x="{x0:.1f}" y="{y + 10}" font-family="{MONO}" font-size="12" '
+                         f'fill="#8b949e">~/{escape(title)}</text>')
+            y += 20
+            for i, (path, dark_logo) in enumerate(icons):
+                r, c = divmod(i, per_row)
+                ix, iy = x0 + c * step, y + r * step
+                if dark_logo:
+                    # Same fix as the site: near-black marks get a light tile.
+                    parts.append(f'<rect x="{ix:.1f}" y="{iy}" width="{icon}" height="{icon}" rx="6" fill="#d4d4d4"/>')
+                    ix, iy, size = ix + 4, iy + 4, icon - 8
+                else:
+                    size = icon
+                parts.append(f'<image x="{ix:.1f}" y="{iy}" width="{size}" height="{size}" href="{data_uri(path)}"/>')
+            y += -(-len(icons) // per_row) * step + 14
+    height = int(BAR + PAD + tallest - 14 + PAD)
     return window(width, height, "tech-stack.txt", "\n".join(parts))
 
-
-FULL_WIDTH = 804  # both README columns: 400 + gap + 400
 
 INTRO = [  # (kind, text); kind picks the markdown-style color
     ("h1", "Hi 👋, I'm Mazine Suliman"),
@@ -107,37 +143,49 @@ INTRO = [  # (kind, text); kind picks the markdown-style color
 ]
 
 
-def intro():
+def intro(width=400):
+    # Sits beside the portrait. Long lines soft-wrap like an editor: only the
+    # first visual line of each source line gets a line number.
     font = 12
+    char_w = font * 0.6
     line_h = 20
     gutter = PAD + 18  # line numbers sit left of this
+    chars = int((width - gutter - PAD) / char_w)
     top = BAR + PAD
     parts = []
+    row = 0
     for n, (kind, text) in enumerate(INTRO, start=1):
-        y = top + n * line_h - 6
+        row += 1
+        y = top + row * line_h - 6
         parts.append(f'<text x="{gutter - 12}" y="{y}" text-anchor="end" fill="#484f58">{n}</text>')
         if kind == "blank":
             continue
         marker, color, weight = {
             "h1": ("# ", "#58a6ff", "700"),
             "h2": ("## ", "#58a6ff", "700"),
-            "li": ("- ", "#d0d7de", "400"),
-            "text": ("", "#d0d7de", "400"),
+            "li": ("- ", LIGHT, "400"),
+            "text": ("", LIGHT, "400"),
         }[kind]
         # Marker and text are separate, placed by monospace width, because
         # renderers may drop the space between them.
         if marker:
             parts.append(f'<text x="{gutter}" y="{y}" fill="#8b949e">{escape(marker.strip())}</text>')
-        tx = gutter + len(marker) * font * 0.6
-        parts.append(f'<text x="{tx:.1f}" y="{y}" fill="{color}" font-weight="{weight}">{escape(text)}</text>')
-    height = top + len(INTRO) * line_h + PAD - 8
+        tx = gutter + len(marker) * char_w
+        for i, line in enumerate(textwrap.wrap(text, chars - len(marker))):
+            if i:
+                row += 1
+                y = top + row * line_h - 6
+            parts.append(f'<text x="{tx:.1f}" y="{y}" fill="{color}" font-weight="{weight}">{escape(line)}</text>')
+    height = round(width * PORTRAIT_ASPECT)
+    assert top + row * line_h + PAD - 8 <= height, "intro text is taller than the portrait"
     body = f'<g font-family="{MONO}" font-size="{font}">\n' + "\n".join(parts) + "\n</g>"
-    return window(FULL_WIDTH, height, "intro.md", body)
+    return window(width, height, "intro.md", body)
 
 
 # Menu bar pieces, left to right: (file name, link label or None, width).
 # Each piece is its own image, so each link item is its own <a>. The README
 # lays them side by side with no space between, so they read as one bar.
+# The last piece comes from menubar_status.py.
 MENUBAR = [
     ("menubar-start.svg", None, 92),
     ("menubar-linkedin.svg", "linkedin", 64),
@@ -151,9 +199,9 @@ MENU_SANS = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue',
 
 
 def menubar_piece(width, body, left, right):
-    # macOS-style bar piece, 20px tall to match the profile-views badge.
-    # The background rect overhangs any side that joins another piece, so
-    # only the bar's two outer ends show rounded corners and side borders.
+    # macOS-style bar piece, 20px tall. The background rect overhangs any
+    # side that joins another piece, so only the bar's two outer ends show
+    # rounded corners and side borders.
     height = 20
     x0 = 0.5 if left else -10
     x1 = width - 0.5 if right else width + 10
@@ -166,40 +214,28 @@ def menubar_piece(width, body, left, right):
 '''
 
 
-def menubar(dirs):
-    apple = open(os.path.join(dirs[0], "apple.svg")).read().replace("<svg ", '<svg fill="#f0f6fc" ', 1)
-    apple_uri = "data:image/svg+xml;base64," + base64.b64encode(apple.encode()).decode()
+def menubar(site_dir):
+    apple = os.path.join(site_dir, "assets", "icons", "apple.svg")
+    apple_svg = open(apple).read().replace("<svg ", '<svg fill="#f0f6fc" ', 1)
+    apple_uri = "data:image/svg+xml;base64," + base64.b64encode(apple_svg.encode()).decode()
     pieces = {}
-    last = len(MENUBAR) - 1
-    for i, (fname, label, width) in enumerate(MENUBAR):
+    for i, (fname, label, width) in enumerate(MENUBAR[:-1]):
         if i == 0:
             body = (f'<image x="12" y="4" width="12" height="12" href="{apple_uri}"/>\n'
                     f'<text x="34" y="14" font-weight="700" fill="#f0f6fc">mazines</text>')
-        elif i == last:
-            # Wi-Fi, battery at the right end, like menu bar status items.
-            bx = width - 34
-            wx, wy = bx - 18, 15
-            body = (f'<rect x="{bx}" y="5.5" width="19" height="9" rx="2.5" fill="none" stroke="#d0d7de"/>'
-                    f'<rect x="{bx + 2}" y="7.5" width="12" height="5" rx="1" fill="#d0d7de"/>'
-                    f'<rect x="{bx + 20}" y="8.5" width="1.6" height="3" rx="0.8" fill="#d0d7de"/>\n'
-                    f'<g fill="none" stroke="#d0d7de" stroke-width="1.5" stroke-linecap="round">'
-                    f'<path d="M{wx - 7} {wy - 6} A9.5 9.5 0 0 1 {wx + 7} {wy - 6}"/>'
-                    f'<path d="M{wx - 4.2} {wy - 3.4} A6 6 0 0 1 {wx + 4.2} {wy - 3.4}"/></g>'
-                    f'<circle cx="{wx}" cy="{wy - 1}" r="1.4" fill="#d0d7de"/>')
         else:
-            body = f'<text x="{width / 2}" y="14" text-anchor="middle" fill="#d0d7de">{escape(label)}</text>'
-        pieces[fname] = menubar_piece(width, body, left=(i == 0), right=(i == last))
+            body = f'<text x="{width / 2}" y="14" text-anchor="middle" fill="{LIGHT}">{escape(label)}</text>'
+        pieces[fname] = menubar_piece(width, body, left=(i == 0), right=False)
     return pieces
 
 
 if __name__ == "__main__":
-    icons_dir, extra_dir, out = sys.argv[1], sys.argv[2], sys.argv[3]
-    dirs = [icons_dir, extra_dir]
+    site_dir, out = sys.argv[1], sys.argv[2]
     outputs = {
         "intro.svg": intro(),
-        "tech-stack.svg": tech_stack(dirs),
+        "tech-stack.svg": tech_stack(site_dir),
     }
-    outputs.update(menubar(dirs))
+    outputs.update(menubar(site_dir))
     for fname, svg in outputs.items():
         with open(os.path.join(out, fname), "w") as f:
             f.write(svg)
