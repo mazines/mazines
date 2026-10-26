@@ -1,0 +1,44 @@
+name: Update menu bar status
+
+# Rebuilds the menu bar's status piece (profile views, date) once a day and
+# force-pushes it to the `stats` branch, which the README links to. Force
+# pushing keeps a single commit there, so main's history stays clean.
+on:
+  schedule:
+    - cron: "10 8 * * *"  # 08:10 UTC = just after midnight US Pacific
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tools/menubar_status.py
+      - tools/windows.py
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build status piece
+        run: |
+          mkdir out
+          python3 tools/menubar_status.py out/menubar-end.svg
+
+      - name: Push to stats branch
+        working-directory: out
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git init -q -b stats
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add menubar-end.svg
+          git commit -q -m "Update menu bar status"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" stats
