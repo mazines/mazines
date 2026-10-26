@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="548" height="510" viewBox="0 0 548 510">
-<rect x="0.5" y="0.5" width="547" height="509" rx="12" fill="#0d1117" stroke="#30363d"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="548" height="484" viewBox="0 0 548 484">
+<rect x="0.5" y="0.5" width="547" height="483" rx="12" fill="#0d1117" stroke="#30363d"/>
 <circle cx="20" cy="17" r="6" fill="#ff5f56"/>
 <circle cx="40" cy="17" r="6" fill="#ffbd2e"/>
 <circle cx="60" cy="17" r="6" fill="#27c93f"/>
@@ -79,6 +79,4 @@
 <text x="22" y="455.0" textLength="504.0" lengthAdjust="spacingAndGlyphs">o*+-:..:-=+xxxx*=-===++xX%&amp;&amp;&amp;%Xox*xxxxoo##%&amp;&amp;&amp;%#Xo*+==:xoxooxooX&amp;%%XXXooXoX##%&amp;&amp;&amp;&amp;&amp;&amp;%%#XXXXXX#%&amp;&amp;@@&amp;#Xoxox*xx#%#+*o##+.:</text>
 <text x="22" y="462.0" textLength="504.0" lengthAdjust="spacingAndGlyphs">Xx+=-:..-+*xXxXo*+*x*xo#%&amp;@@&amp;&amp;%#XXXooXX#%&amp;&amp;@@&amp;&amp;%#Xoox*+oXXX#XX#%&amp;&amp;%#XXoooooX#%&amp;&amp;&amp;&amp;&amp;%##oxxxxxoX#&amp;&amp;@@&amp;%Xooo**oX%&amp;*+*oX#+.-</text>
 </g>
-<circle cx="22" cy="492" r="4" fill="#3fb950"/>
-<text x="32" y="496" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" fill="#8b949e">mazines / portrait loaded</text>
 </svg>
