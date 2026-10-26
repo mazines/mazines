@@ -1,20 +1,13 @@
-<p align="left">
-  <img src="https://komarev.com/ghpvc/?username=mazzaleen&label=Profile%20views&color=0e75b6&style=flat" alt="mazzaleen" />
+<p align="center">
+  <img src="./menubar.svg" alt="mazines menu bar" width="100%" />
 </p>
 
-<h1 align="center">
-  Hi 👋, I'm <a href="https://linkedin.com/in/mazines" target="_blank">Mazine Suliman</a>
-</h1>
-
-<p align="center">
-  Software Engineer focused on data systems, privacy-first data platforms, and product discovery.<br/>
-  SWE → PM with experience turning ambiguous user signals into shipped features and measurable impact.
+<p align="right">
+  <img src="https://komarev.com/ghpvc/?username=mazzaleen&label=Profile%20views&color=0a84ff&style=flat" alt="Profile views" />
 </p>
 
-<h3 align="center">What I’m working on</h3>
 <p align="center">
-  LLM-driven clustering, summarization, and evaluation<br/>
-  Product discovery using qualitative + quantitative customer signals
+  <img src="./intro.svg" alt="Hi, I'm Mazine Suliman. Software Engineer focused on data systems, privacy-first data platforms, and product discovery. SWE to PM with experience turning ambiguous user signals into shipped features and measurable impact. Working on LLM-driven clustering, summarization, and evaluation, and product discovery using qualitative and quantitative customer signals." width="100%" />
 </p>
 
 <p>
