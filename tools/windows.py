@@ -22,10 +22,6 @@ ICON_GAP = 9
 COL_GAP = 20
 LIGHT = "#d0d7de"
 
-# portrait.svg is 548x484 (see build.py). The intro window beside it uses the
-# same aspect ratio, so both are the same height at the same README width.
-PORTRAIT_ASPECT = 484 / 548
-
 # Single-color icons with no fill of their own draw black; give them brand colors.
 FILLS = {
     "dynamodb": "#4053d6",
@@ -86,8 +82,9 @@ def window(width, height, title, body):
 '''
 
 
-def tech_stack(site_dir, width=804, cols=3, icon=28):
-    # Full README width, under the portrait and intro row.
+def tech_stack(site_dir, width=520, cols=2, icon=24, label_font=13):
+    # Sits beside the portrait. The README sizes both images from their
+    # aspect ratios, so they show at the same height.
     groups = read_skills(site_dir)
     col_w = (width - 2 * PAD - (cols - 1) * COL_GAP) / cols
     per_row = int((col_w + ICON_GAP) // (icon + ICON_GAP))
@@ -113,7 +110,7 @@ def tech_stack(site_dir, width=804, cols=3, icon=28):
         x0 = PAD + col * (col_w + COL_GAP)
         y = BAR + PAD
         for title, icons in groups[a:b]:
-            parts.append(f'<text x="{x0:.1f}" y="{y + 10}" font-family="{MONO}" font-size="12" '
+            parts.append(f'<text x="{x0:.1f}" y="{y + 10}" font-family="{MONO}" font-size="{label_font}" '
                          f'fill="#8b949e">~/{escape(title)}</text>')
             y += 20
             for i, (path, dark_logo) in enumerate(icons):
@@ -143,9 +140,9 @@ INTRO = [  # (kind, text); kind picks the markdown-style color
 ]
 
 
-def intro(width=400):
-    # Sits beside the portrait. Long lines soft-wrap like an editor: only the
-    # first visual line of each source line gets a line number.
+def intro(width=804):
+    # Full README width. Long lines soft-wrap like an editor: only the first
+    # visual line of each source line gets a line number.
     font = 12
     char_w = font * 0.6
     line_h = 20
@@ -176,8 +173,7 @@ def intro(width=400):
                 row += 1
                 y = top + row * line_h - 6
             parts.append(f'<text x="{tx:.1f}" y="{y}" fill="{color}" font-weight="{weight}">{escape(line)}</text>')
-    height = round(width * PORTRAIT_ASPECT)
-    assert top + row * line_h + PAD - 8 <= height, "intro text is taller than the portrait"
+    height = top + row * line_h + PAD - 8
     body = f'<g font-family="{MONO}" font-size="{font}">\n' + "\n".join(parts) + "\n</g>"
     return window(width, height, "intro.md", body)
 
