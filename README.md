@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="#"><img src="./portrait.svg?v=3" alt="ASCII portrait of Mazine" width="50.51%" /></a>&nbsp;<a href="#"><img src="./tech-stack.svg?v=3" alt="Tech stack: Claude, Codex, Python, Ruby, Java, GraphQL, Django, Rails, Angular, React, JavaScript, TypeScript, HTML5, CSS3, Bootstrap, Sass, Next.js, TanStack, styled-components, Postgres, MySQL, MongoDB, Redis, Cassandra, DynamoDB, Tableau, Splunk, Grafana, Sentry, pytest, Playwright, Vitest, AWS, Docker, Kubernetes, Jenkins, Heroku, Kafka, Figma, Jira, Trello, Miro, Firebase, GA, Radar, Git, Bitbucket, TensorFlow, PyTorch, MATLAB, Excel, Swift. Languages: Arabic, English, Spanish, French." width="46.49%" /></a>
+  <a href="#"><img src="./portrait.svg?v=3" alt="ASCII portrait of Mazine" width="50.51%" /></a>&nbsp;<a href="#"><img src="./tech-stack.svg?v=4" alt="Tech stack: Claude, Codex, Python, Ruby, Java, GraphQL, Django, Rails, Angular, React, JavaScript, TypeScript, HTML5, CSS3, Bootstrap, Sass, Next.js, TanStack, styled-components, Postgres, MySQL, MongoDB, Redis, Cassandra, DynamoDB, Tableau, Splunk, Grafana, Sentry, pytest, Playwright, Vitest, AWS, Docker, Kubernetes, Jenkins, Heroku, Kafka, Figma, Jira, Trello, Miro, Firebase, GA, Radar, Git, Bitbucket, TensorFlow, PyTorch, MATLAB, Excel, Swift. Languages: Arabic, English, Spanish, French." width="46.49%" /></a>
 </p>
 
 <!-- Profile-view counter: counts each README view. The menu bar shows the
