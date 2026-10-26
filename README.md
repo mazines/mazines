@@ -12,10 +12,10 @@
 </p>
 
 <h3 align="center">What I’m working on</h3>
-<ul align="center">
-  <li>LLM-driven clustering, summarization, and evaluation</li>
-  <li>Product discovery using qualitative + quantitative customer signals</li>
-</ul>
+<p align="center">
+  LLM-driven clustering, summarization, and evaluation<br/>
+  Product discovery using qualitative + quantitative customer signals
+</p>
 
 <p>
   <img align="right" src="./tech-stack.svg" alt="Tech stack: Python, Ruby, Java, GraphQL, PostgreSQL, MySQL, MongoDB, Redis, Cassandra, DynamoDB, Tableau, Splunk, Grafana, TensorFlow, PyTorch, MATLAB, Excel, Swift, Rails, Angular, React, JavaScript, HTML5, CSS3, Bootstrap, Sass, AWS, Docker, Kubernetes, Jenkins, Heroku, Kafka, Miro, Figma, Confluence, Jira, Trello, Firebase, Google Analytics, Git" width="400" />
