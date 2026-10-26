@@ -1,8 +1,5 @@
-<p align="center">
-  <img src="./menubar.svg" alt="mazines menu bar" width="100%" />
-</p>
-
 <p align="right">
+  <img src="./menubar.svg" alt="mazines menu bar" width="86%" />
   <img src="https://komarev.com/ghpvc/?username=mazzaleen&label=Profile%20views&color=0a84ff&style=flat" alt="Profile views" />
 </p>
 

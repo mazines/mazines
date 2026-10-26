@@ -147,34 +147,36 @@ def intro():
     return window(FULL_WIDTH, height, "intro.md", body)
 
 
-def menubar(dirs):
-    # macOS-style menu bar. Menus name the README windows below it.
-    height = 30
+def menubar(dirs, width=720):
+    # macOS-style menu bar. Menus name the README windows below it. The README
+    # puts the live profile-views badge (20px tall) at its right end, so the
+    # bar is 20px tall too and leaves room for it.
+    height = 20
+    mid = height / 2
     sans = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif"
     apple = open(os.path.join(dirs[0], "apple.svg")).read().replace("<svg ", '<svg fill="#f0f6fc" ', 1)
     apple_uri = "data:image/svg+xml;base64," + base64.b64encode(apple.encode()).decode()
     menus = ["intro.md", "portrait.txt", "linkedin", "medium", "tech-stack.txt"]
-    parts = [f'<image x="16" y="8" width="14" height="14" href="{apple_uri}"/>',
-             f'<text x="44" y="20" font-weight="700" fill="#f0f6fc">mazines</text>']
+    base = mid + 4  # text baseline
+    parts = [f'<image x="12" y="{mid - 6}" width="12" height="12" href="{apple_uri}"/>',
+             f'<text x="36" y="{base}" font-weight="700" fill="#f0f6fc">mazines</text>']
     # One text run, so the browser measures each word; runs of non-breaking
     # spaces keep the gaps equal.
     gap = "\u00a0" * 5
-    parts.append(f'<text x="116" y="20" fill="#d0d7de">{escape(gap.join(menus))}</text>')
-    # Right side: Wi-Fi, battery, location, like the menu bar status items.
-    right = FULL_WIDTH - 16
-    parts.append(f'<text x="{right}" y="20" text-anchor="end" fill="#d0d7de">San Francisco, CA</text>')
-    bx = right - 150
-    parts.append(f'<rect x="{bx}" y="10" width="22" height="11" rx="3" fill="none" stroke="#d0d7de"/>'
-                 f'<rect x="{bx + 2}" y="12" width="15" height="7" rx="1.5" fill="#d0d7de"/>'
-                 f'<rect x="{bx + 23}" y="13.5" width="2" height="4" rx="1" fill="#d0d7de"/>')
-    wx, wy = bx - 22, 21
-    parts.append(f'<g fill="none" stroke="#d0d7de" stroke-width="1.8" stroke-linecap="round">'
-                 f'<path d="M{wx - 8} {wy - 7} A11 11 0 0 1 {wx + 8} {wy - 7}"/>'
-                 f'<path d="M{wx - 5} {wy - 4} A7 7 0 0 1 {wx + 5} {wy - 4}"/></g>'
-                 f'<circle cx="{wx}" cy="{wy - 1}" r="1.6" fill="#d0d7de"/>')
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{FULL_WIDTH}" height="{height}" viewBox="0 0 {FULL_WIDTH} {height}">
-<rect x="0.5" y="0.5" width="{FULL_WIDTH - 1}" height="{height - 1}" rx="8" fill="#1c1c1e" stroke="#30363d"/>
-<g font-family="{sans}" font-size="13">
+    parts.append(f'<text x="100" y="{base}" fill="#d0d7de">{escape(gap.join(menus))}</text>')
+    # Right side: Wi-Fi, battery, like the menu bar status items.
+    bx = width - 34
+    parts.append(f'<rect x="{bx}" y="{mid - 4.5}" width="19" height="9" rx="2.5" fill="none" stroke="#d0d7de"/>'
+                 f'<rect x="{bx + 2}" y="{mid - 2.5}" width="12" height="5" rx="1" fill="#d0d7de"/>'
+                 f'<rect x="{bx + 20}" y="{mid - 1.5}" width="1.6" height="3" rx="0.8" fill="#d0d7de"/>')
+    wx, wy = bx - 18, mid + 5
+    parts.append(f'<g fill="none" stroke="#d0d7de" stroke-width="1.5" stroke-linecap="round">'
+                 f'<path d="M{wx - 7} {wy - 6} A9.5 9.5 0 0 1 {wx + 7} {wy - 6}"/>'
+                 f'<path d="M{wx - 4.2} {wy - 3.4} A6 6 0 0 1 {wx + 4.2} {wy - 3.4}"/></g>'
+                 f'<circle cx="{wx}" cy="{wy - 1}" r="1.4" fill="#d0d7de"/>')
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
+<rect x="0.5" y="0.5" width="{width - 1}" height="{height - 1}" rx="5" fill="#1c1c1e" stroke="#30363d"/>
+<g font-family="{sans}" font-size="12">
 {chr(10).join(parts)}
 </g>
 </svg>
