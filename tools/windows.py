@@ -55,7 +55,7 @@ def data_uri(path):
 
 
 def read_skills(site_dir):
-    """Return [(section, [(icon_path, dark_logo)])] from the site's skills page."""
+    """Return [(section, [(icon_path, dark_logo, name)])] from the site's skills page."""
     html = open(os.path.join(site_dir, "skills", "index.html")).read()
     html = html[:html.index('<nav class="main-nav">')]
     groups = []
@@ -63,8 +63,11 @@ def read_skills(site_dir):
         title = unescape(re.search(r"<h2>(.*?)</h2>", chunk).group(1)).lower()
         if 'class="lang-note"' in chunk:
             title += " (by proficiency)"
-        icons = [(os.path.join(site_dir, src.lstrip("/")), "dark-logo" in cls)
-                 for cls, src in re.findall(r'<img class="([^"]*)" src="(/assets/icons/[^"]+)"', chunk)]
+        # Name: the <span> after the icon, or for flags the alt text before " (".
+        icons = [(os.path.join(site_dir, src.lstrip("/")), "dark-logo" in cls,
+                  unescape(span or alt.split(" (")[0]))
+                 for cls, src, alt, span in re.findall(
+                     r'<img class="([^"]*)" src="(/assets/icons/[^"]+)" alt="([^"]*)" />(?:<span>([^<]*)</span>)?', chunk)]
         groups.append((title, icons))
     return groups
 
@@ -82,16 +85,35 @@ def window(width, height, title, body):
 '''
 
 
-def tech_stack(site_dir, width=520, cols=2, icon=24, label_font=13):
-    # Sits beside the portrait. The README sizes both images from their
-    # aspect ratios, so they show at the same height.
+def split_name(name, max_chars):
+    """One line, or two split at a hyphen or space, like the site's wrapping."""
+    if len(name) <= max_chars:
+        return [name]
+    for sep in ("-", " "):
+        if sep in name:
+            head, tail = name.split(sep, 1)
+            return [head + (sep if sep == "-" else ""), tail]
+    return [name]
+
+
+def tech_stack(site_dir, width=804, cols=3, icon=26, label_font=12, name_font=9.5, cell_w=60):
+    # Full README width, under the intro and portrait row. Each skill: icon
+    # with its name under it, like the site's skills page. name_font 9.5
+    # leaves a gap between 10-letter names (Kubernetes) in 60px cells.
     groups = read_skills(site_dir)
     col_w = (width - 2 * PAD - (cols - 1) * COL_GAP) / cols
-    per_row = int((col_w + ICON_GAP) // (icon + ICON_GAP))
-    step = icon + ICON_GAP
+    per_row = int(col_w // cell_w)
+    name_chars = int(cell_w // (name_font * 0.6))
+    line_h = name_font + 2
+
+    def rows_of(icons):
+        rows = [icons[i:i + per_row] for i in range(0, len(icons), per_row)]
+        # Row height: icon, gap, the most name lines in the row, gap below.
+        return [(row, icon + 6 + max(len(split_name(n, name_chars)) for *_, n in row) * line_h + 10)
+                for row in rows]
 
     def group_h(icons):
-        return 20 + -(-len(icons) // per_row) * step + 14
+        return 22 + sum(h for _, h in rows_of(icons)) + 8
 
     # Keep the site's order, filled top to bottom like CSS columns: try every
     # way to cut the list into `cols` runs, keep the one with the shortest
@@ -110,21 +132,26 @@ def tech_stack(site_dir, width=520, cols=2, icon=24, label_font=13):
         x0 = PAD + col * (col_w + COL_GAP)
         y = BAR + PAD
         for title, icons in groups[a:b]:
-            parts.append(f'<text x="{x0:.1f}" y="{y + 10}" font-family="{MONO}" font-size="{label_font}" '
+            parts.append(f'<text x="{x0:.1f}" y="{y + 11}" font-family="{MONO}" font-size="{label_font}" '
                          f'fill="#8b949e">~/{escape(title)}</text>')
-            y += 20
-            for i, (path, dark_logo) in enumerate(icons):
-                r, c = divmod(i, per_row)
-                ix, iy = x0 + c * step, y + r * step
-                if dark_logo:
-                    # Same fix as the site: near-black marks get a light tile.
-                    parts.append(f'<rect x="{ix:.1f}" y="{iy}" width="{icon}" height="{icon}" rx="6" fill="#d4d4d4"/>')
-                    ix, iy, size = ix + 4, iy + 4, icon - 8
-                else:
-                    size = icon
-                parts.append(f'<image x="{ix:.1f}" y="{iy}" width="{size}" height="{size}" href="{data_uri(path)}"/>')
-            y += -(-len(icons) // per_row) * step + 14
-    height = int(BAR + PAD + tallest - 14 + PAD)
+            y += 22
+            for row, row_h in rows_of(icons):
+                for c, (path, dark_logo, name) in enumerate(row):
+                    cx = x0 + c * cell_w + cell_w / 2
+                    ix = cx - icon / 2
+                    if dark_logo:
+                        # Same fix as the site: near-black marks get a light tile.
+                        parts.append(f'<rect x="{ix:.1f}" y="{y}" width="{icon}" height="{icon}" rx="6" fill="#d4d4d4"/>')
+                        parts.append(f'<image x="{ix + 4:.1f}" y="{y + 4}" width="{icon - 8}" height="{icon - 8}" '
+                                     f'href="{data_uri(path)}"/>')
+                    else:
+                        parts.append(f'<image x="{ix:.1f}" y="{y}" width="{icon}" height="{icon}" href="{data_uri(path)}"/>')
+                    for k, line in enumerate(split_name(name, name_chars)):
+                        parts.append(f'<text x="{cx:.1f}" y="{y + icon + 6 + (k + 1) * line_h - 2}" text-anchor="middle" '
+                                     f'font-family="{MONO}" font-size="{name_font}" fill="{LIGHT}">{escape(line)}</text>')
+                y += row_h
+            y += 8
+    height = int(BAR + PAD + tallest - 8 + PAD - 10)
     return window(width, height, "tech-stack.txt", "\n".join(parts))
 
 
@@ -140,9 +167,10 @@ INTRO = [  # (kind, text); kind picks the markdown-style color
 ]
 
 
-def intro(width=804):
-    # Full README width. Long lines soft-wrap like an editor: only the first
-    # visual line of each source line gets a line number.
+def intro(width=400):
+    # Sits beside the portrait; the README sizes both from their aspect
+    # ratios so they match in height. Long lines soft-wrap like an editor:
+    # only the first visual line of each source line gets a line number.
     font = 12
     char_w = font * 0.6
     line_h = 20
