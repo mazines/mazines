@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="#"><img src="./intro.svg?v=5" alt="Hi, I'm Mazine Suliman. Software Engineer focused on data systems, privacy-first data platforms, and product discovery. SWE to PM with experience turning ambiguous user signals into shipped features and measurable impact. Working on LLM-driven clustering, summarization, and evaluation, and product discovery using qualitative and quantitative customer signals." width="48.73%" /></a>&nbsp;<a href="#"><img src="./portrait.svg?v=5" alt="ASCII portrait of Mazine" width="48.27%" /></a>
+  <a href="#"><img src="./intro.svg?v=5" alt="Software Engineer focused on data systems, privacy-first data platforms, and product discovery. SWE to PM with experience turning ambiguous user signals into shipped features and measurable impact. Working on LLM-driven clustering, summarization, and evaluation, and product discovery using qualitative and quantitative customer signals." width="48.73%" /></a>&nbsp;<a href="#"><img src="./portrait.svg?v=5" alt="ASCII portrait of Mazine" width="48.27%" /></a>
 </p>
 
 <p>
